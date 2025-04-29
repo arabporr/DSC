@@ -10,7 +10,7 @@ from mc import mc_price
 
 
 def single_option_price(
-    Option_type: str,
+    option_type: str,
     S: float,
     K: float,
     T: float,
@@ -24,7 +24,7 @@ def single_option_price(
     It gets one specific set of parameters and returns the option price using both methods.
 
     Parameters:
-    - Option_type: Type of option (call or put)
+    - option_type: Type of option (call or put)
     - S: Underlying asset price
     - K: Strike price
     - T: Time to expiration (in years)
@@ -36,7 +36,7 @@ def single_option_price(
     Returns:
     - A dictionary with this structure:
         {
-            "Option_type": Option_type,
+            "option_type": option_type,
             "S": S,
             "K": K,
             "T": T,
@@ -48,10 +48,10 @@ def single_option_price(
         }
     """
 
-    bs = bs_price(Option_type, S, K, T, r, sigma, q)
-    mc = mc_price(Option_type, S, K, T, r, sigma, q, n_paths=mc_paths)
+    bs = bs_price(option_type, S, K, T, r, sigma, q)
+    mc = mc_price(option_type, S, K, T, r, sigma, q, n_paths=mc_paths)
     return {
-        "Option_type": Option_type,
+        "option_type": option_type,
         "S": S,
         "K": K,
         "T": T,
