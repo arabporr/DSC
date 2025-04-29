@@ -23,27 +23,28 @@ def mc_price(
     The risk-neutral expectation is approximated by the average of the payoffs from n_paths simulated paths.
 
     where:
-      C: call option price
-      P: put option price
-      ST: spot price at maturity
-      S: spot price
-      K: strike price
-      T: time to maturity (years)
-      r: risk-free rate (annual)
-      sigma: volatility (annual)
-      q: dividend yield (annual)
+    - C: call option price
+    - P: put option price
+    - ST: spot price at maturity
+    - S: spot price
+    - K: strike price
+    - T: time to maturity (years)
+    - r: risk-free rate (annual)
+    - sigma: volatility (annual)
+    - q: dividend yield (annual)
 
 
     option_type: "call" or "put"
-      S: spot price
-      K: strike price
-      T: time to maturity (years)
-      r: risk-free rate (annual)
-      sigma: volatility (annual)
-      q: dividend yield (annual)
-      n_paths: number of paths to simulate
+    - S: spot price
+    - K: strike price
+    - T: time to maturity (years)
+    - r: risk-free rate (annual)
+    - sigma: volatility (annual)
+    - q: dividend yield (annual)
+    - n_paths: number of paths to simulate
+
     Returns:
-      present value of option
+    - present value of option
     """
     dt = T
     drift = dt * (r - q - 0.5 * sigma**2)

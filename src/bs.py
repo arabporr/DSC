@@ -18,25 +18,27 @@ def bs_price(
     P = K * e^(-rT) * N(-d2) - S * e^(-qT) * N(-d1)
     d1 = (ln(S/K) + (r - q + 0.5 * sigma^2)T) / (sigma * sqrt(T))
     d2 = d1 - sigma * sqrt(T)
+
     where:
-      C: call option price
-      P: put option price
-      S: spot price
-      K: strike price
-      T: time to maturity (years)
-      r: risk-free rate (annual)
-      sigma: volatility (annual)
-      q: dividend yield (annual)
+    - C: call option price
+    - P: put option price
+    - S: spot price
+    - K: strike price
+    - T: time to maturity (years)
+    - r: risk-free rate (annual)
+    - sigma: volatility (annual)
+    - q: dividend yield (annual)
 
 
     Parameters:
-      option_type: "call" or "put"
-      S: spot price
-      K: strike price
-      T: time to maturity (years)
-      r: risk-free rate (annual)
-      sigma: volatility (annual)
-      q: dividend yield (annual)
+    - option_type: "call" or "put"
+    - S: spot price
+    - K: strike price
+    - T: time to maturity (years)
+    - r: risk-free rate (annual)
+    - sigma: volatility (annual)
+    - q: dividend yield (annual)
+
     Returns:
       present value of option
     """
