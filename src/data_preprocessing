@@ -1,0 +1,25 @@
+import numpy as np
+import pandas as pd
+
+
+df = pd.read_csv("../data/options_dataset.csv")
+
+new_names = {
+    "Option_type": "option_type",
+    "S": "stock_price",
+    "K": "strike_price",
+    "T": "time_to_maturity",
+    "r": "interest_rate",
+    "sigma": "volatility",
+    "q": "dividend_yield",
+    "bs_price": "black_scholes_price",
+    "mc_price": "monte_carlo_price",
+}
+
+df.rename(columns=new_names, inplace=True)
+
+df["option_type"] = df["option_type"].astype("category")
+
+df = df.round(4)
+
+df.to_csv("../data/cleaned_options_dataset.csv", index=False)
