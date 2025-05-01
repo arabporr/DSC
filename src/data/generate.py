@@ -8,8 +8,8 @@ import multiprocessing
 from concurrent.futures import ProcessPoolExecutor as Executor
 from concurrent.futures import as_completed
 
-from European_vanilla import bs_price, mc_price
-from Worst_Off import mc_price_worst_off
+from src.data.European_vanilla import bs_price, mc_price
+from src.data.Worst_Off import mc_price_worst_off
 
 
 def single_option_price_europian_vanilla(
@@ -336,28 +336,23 @@ def generate_data(
     elif option == "Worst_Off":
         dataset = generate_worst_off(
             Option_types=["call", "put"],  # call, put
-            S1_values=list(np.linspace(50, 150, 20 + 1)),  # 50, 55, 60, ..., 150
-            S2_values=list(np.linspace(50, 150, 20 + 1)),  # 50, 55, 60, ..., 150
+            S1_values=list(np.linspace(80, 120, 8 + 1)),  # 80, 85, ..., 120
+            S2_values=list(np.linspace(80, 120, 8 + 1)),  # 80, 85, ..., 120
             K1_values=[100],  # 100
             K2_values=[100],  # 100
-            sigma1_values=[0.1, 0.2, 0.4, 0.6, 0.8],
-            sigma2_values=[0.1, 0.2, 0.4, 0.6, 0.8],
-            q1_values=[0.0, 0.01, 0.02, 0.03, 0.04, 0.05],  # 0%, 1%, 2%, 3%, 4%, 5%
-            q2_values=[0.0, 0.01, 0.02, 0.03, 0.04, 0.05],  # 0%, 1%, 2%, 3%, 4%, 5%
-            corr_values=[0.01, 0.1, 0.2, 0.4, 0.8],  # correlation coefficients
+            sigma1_values=[0.1, 0.4, 0.8],
+            sigma2_values=[0.1, 0.4, 0.8],
+            q1_values=[0.01, 0.02, 0.05],  # 0%, 2%, 5%
+            q2_values=[0.01, 0.02, 0.05],  # 0%, 2%, 5%
+            corr_values=[0.01, 0.2, 0.5, 0.8],  # correlation coefficients
             T_values=[
                 0.08,
-                0.25,
                 0.5,
                 1.0,
-                1.5,
                 2.0,
-                2.5,
-                3.0,
-                4.0,
                 5.0,
-            ],  # 1 month, 3 months, 6 months, 1 year, 1.5 years, 2 years, 2.5 years, 3 years, 4 years, 5 years
-            r_values=[0.01, 0.025, 0.05, 0.075, 0.1],  # 1%, 2.5%, 5%, 7.5%, 10%
+            ],  # 1 month, 6 months, 1 year, 2 years, 5 years
+            r_values=[0.01, 0.025, 0.05, 0.1],  # 1%, 2.5%, 5%, 10%
         )
 
         dataset.to_csv(Worst_Off_output_csv, index=False)
