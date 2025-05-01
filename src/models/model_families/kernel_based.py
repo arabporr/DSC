@@ -42,7 +42,7 @@ def train_kernel_models(data_modes: dict, models_grids: dict = {}) -> List[dict]
                 "model": SVR(),
                 "grid": {
                     "kernel": ["linear", "rbf"],
-                    # "C": [0.1, 1.0, 10.0],
+                    "C": [0.1, 1.0, 10.0],
                 },
             },
             "KNeighborsRegressor": {
