@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.decomposition import PCA
 
+from src.models.utils import autoencoder_feature_extraction
+
 from src.models.model_families.baseline import train_baseline_models
 from src.models.model_families.tree_based import train_tree_models
 from src.models.model_families.kernel_based import train_kernel_models
@@ -113,6 +115,12 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     X_train_pca = pca.fit_transform(X_train)
     X_test_pca = pca.transform(X_test)
 
+    # Using autoencoder to reduce features
+
+    encoder_results = autoencoder_feature_extraction(option, X_train, X_test)
+    X_train_autoencoder = encoder_results["X_train_features"]
+    X_test_autoencoder = encoder_results["X_test_features"]
+
     # For later use, we will create a dictionary with the different data modes
     # this will be used to train the models and will make our job easier
     # when we want to train different models with different data modes
@@ -132,6 +140,12 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
         "pca": {
             "X_train": X_train_pca,
             "X_test": X_test_pca,
+            "y_train": y_train,
+            "y_test": y_test,
+        },
+        "autoencoder": {
+            "X_train": X_train_autoencoder,
+            "X_test": X_test_autoencoder,
             "y_train": y_train,
             "y_test": y_test,
         },
