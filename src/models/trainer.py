@@ -1,6 +1,9 @@
 import os
+import argparse
 import time
 import pickle
+
+from typing import Literal
 
 import pandas as pd
 import numpy as np
@@ -19,6 +22,12 @@ from xgboost import XGBRegressor
 from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neural_network import MLPRegressor
+
+
+from src.models.model_families.baseline import train_baseline_models
+from src.models.model_families.tree_based import train_tree_models
+from src.models.model_families.kernel_based import train_kernel_models
+from src.models.model_families.neural_network import train_nn_models
 
 
 # Data loading
@@ -463,3 +472,35 @@ df_res.to_csv("../results/model_comparison.csv", index=False)
 # Saving the detailed results to a pickle file (since it has the grid search objects)
 with open("../results/detailed_results.pkl", "wb") as f:
     pickle.dump(detailed_results, f)
+
+
+def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
+    """
+    This function loads the train and test datasets based on the option data type and then trains different families of models on the train data.
+    The training is being done in sci-kit learn style (I avoided using TensorFlow and PyTorch for the neural network due to simplicity of the task and limited time)
+    We train each model with a grid of parameters and 3-fold cross-validation.
+    At the end, we create a csv and a pickle file containing the results of our models (Root Mean Square Error) on training and testing parts.
+
+    Parameters:
+        option (str): the type of option data we want to use
+
+    Returns:
+        None: It saves the result as csv files in /results/ folder.
+    """
+    # Output paths
+
+
+if __name__ == "__main__":
+    """
+    Adding the functionality of execution from command line.
+    How to use?
+
+    python src/models/trainer.py {Worst_Off or European_Vanilla}
+
+    It automatically saves the data into data/02_processed/ and data/splitted/ folders.
+    """
+
+    p = argparse.ArgumentParser()
+    p.add_argument("version", choices=["European_Vanilla", "Worst_Off"])
+    args = p.parse_args()
+    train_all_models(args.version)
