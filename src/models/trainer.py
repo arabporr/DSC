@@ -8,7 +8,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-from sklearn.feature_selection import SelectKBest, mutual_info_regression
+from sklearn.feature_selection import SelectKBest, f_regression
 from sklearn.decomposition import PCA
 
 from src.models.model_families.baseline import train_baseline_models
@@ -60,9 +60,13 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     X_test = test_data.iloc[:, :-1]
     y_test = test_data.iloc[:, -1]
 
+    print("Model Trainer: ", "Data loaded successfully")
+
     # Data preparation
     # Identifying columns with almost constant values
     Columns_variance_filter = X_train.loc[:, X_train.var() > 1e-2].columns.tolist()
+
+    print("Model Trainer: ", "Low variance columns identified")
 
     # Identifying columns with low correlation to the target variable
     df = X_train.copy()
@@ -70,9 +74,13 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     corr = df.corr()
     Columns_correlation_filter = corr["y"].abs()[corr["y"].abs() > 0.05].index.tolist()
 
+    print("Model Trainer: ", "Columns with low correlated with target identified")
+
     # Identifying top 40 features using mutual information regression
-    Feature_selection = SelectKBest(mutual_info_regression, k=40).fit(X_train, y_train)
+    Feature_selection = SelectKBest(f_regression, k=40).fit(X_train, y_train)
     Top_40_columns = X_train.columns[Feature_selection.get_support(indices=True)]
+
+    print("Model Trainer: ", "Top 40 variables identified")
 
     # Getting the intersection of the methods above
     top_variables = set(Top_40_columns).intersection(
@@ -86,6 +94,8 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     pca_full = PCA(random_state=2025)
     pca_full.fit(X_train)
 
+    print("Model Trainer: ", "PCA for full dataset calculated")
+
     # Adding the amount of variance explained by each component
     cum_var = np.cumsum(pca_full.explained_variance_ratio_)
 
@@ -93,9 +103,11 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     # Here I just tried different values since 95 till 99 were in 20-ish range
     # I decided to go with 98%, not too crazy and not too low
     Var_threshold = 0.98
-    Number_of_components = np.where(cum_var > Var_threshold)[0][
-        0
-    ]  # this the index of the first component that explains more than 98% of the variance
+    Number_of_components = (
+        np.where(cum_var > Var_threshold)[0][0] + 1
+    )  # this the index of the first component that explains more than 98% of the variance
+
+    print("Model Trainer: ", f"{Number_of_components} components selected (98% var)")
 
     pca = PCA(n_components=Number_of_components, random_state=2025)
     X_train_pca = pca.fit_transform(X_train)
@@ -153,10 +165,14 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     results = []  # we will use this to keep the results of the models
     detailed_results = []  # keeping grid search objects as well
 
+    print("Model Trainer: ", "Training started")
+
     for trainer in families_trainers:
         family_result, family_detailed_result = trainer(data_modes)
         results.extend(family_result)
         detailed_results.extend(family_detailed_result)
+
+    print("Model Trainer: ", "Training done")
 
     ## Saving the results
     os.makedirs(output_dir, exist_ok=True)
@@ -167,6 +183,8 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     # Saving the detailed results to a pickle file (since it has the grid search objects)
     with open(output_file_address_details, "wb") as f:
         pickle.dump(detailed_results, f)
+
+    print("Model Trainer: ", "results saved. Done.")
 
 
 if __name__ == "__main__":
