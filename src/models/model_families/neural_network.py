@@ -13,7 +13,20 @@ from sklearn.metrics import root_mean_squared_error
 from sklearn.neural_network import MLPRegressor
 
 
-def train_nn_models(data_modes: dict) -> List[dict]:
+def train_nn_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
+    """
+    The helper function to train and find the best hyperparameters for a specific family of models. Here: basid neural networks (MLPs)
+    It receives data and model congifs in the input and tries a grid search on models and their corresponding space of parameters
+    To make it reuseable after initial testing of all models, it has the model_gird input option which one can use to search with different
+    settings within a family.
+
+    Args:
+        data_modes (dict): the dictionary of data, containing data modes (all_var, top_var, or pca)
+        models_grids (dict, optional): the dictionary of pair of models and their corresponding parameter space
+
+    Returns:
+        List[dict]: the list of results for the models trained, containing one numerical and one with the gridsearch objects (results and detailed_results)
+    """
     results = []  # we will use this to keep the results of the models
     detailed_results = []  # keeping grid search objects as well
 
@@ -21,29 +34,32 @@ def train_nn_models(data_modes: dict) -> List[dict]:
     family_name = "neural_networks"
     print(f"\n\n\n\nRunning {family_name} family:\n")
 
-    # Hyperparameters for the neural networks
-    neural_networks = {
-        "MLPRegressor": {
-            "model": MLPRegressor(max_iter=100, random_state=2025),
-            "grid": {
-                "hidden_layer_sizes": [
-                    (10,),
-                    (50,),
-                    (
-                        20,
-                        20,
-                        20,
-                        20,
-                    ),
-                    (
-                        50,
-                        50,
-                    ),
-                ],
-                "learning_rate": ["constant", "adaptive"],
+    if models_grids == {}:
+        # Hyperparameters for the neural networks
+        neural_networks = {
+            "MLPRegressor": {
+                "model": MLPRegressor(max_iter=100, random_state=2025),
+                "grid": {
+                    "hidden_layer_sizes": [
+                        (10,),
+                        (50,),
+                        (
+                            20,
+                            20,
+                            20,
+                            20,
+                        ),
+                        (
+                            50,
+                            50,
+                        ),
+                    ],
+                    "learning_rate": ["constant", "adaptive"],
+                },
             },
-        },
-    }
+        }
+    else:
+        neural_networks = models_grids
 
     for model_name, settings in neural_networks.items():
         print(f"Running {model_name} model:\n")

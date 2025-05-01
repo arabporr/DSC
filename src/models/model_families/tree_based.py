@@ -14,7 +14,20 @@ from sklearn.ensemble import RandomForestRegressor
 from xgboost import XGBRegressor
 
 
-def train_tree_models(data_modes: dict) -> List[dict]:
+def train_tree_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
+    """
+    The helper function to train and find the best hyperparameters for a specific family of models. Here: tree based models
+    It receives data and model congifs in the input and tries a grid search on models and their corresponding space of parameters
+    To make it reuseable after initial testing of all models, it has the model_gird input option which one can use to search with different
+    settings within a family.
+
+    Args:
+        data_modes (dict): the dictionary of data, containing data modes (all_var, top_var, or pca)
+        models_grids (dict, optional): the dictionary of pair of models and their corresponding parameter space
+
+    Returns:
+        List[dict]: the list of results for the models trained, containing one numerical and one with the gridsearch objects (results and detailed_results)
+    """
     results = []  # we will use this to keep the results of the models
     detailed_results = []  # keeping grid search objects as well
 
@@ -22,21 +35,26 @@ def train_tree_models(data_modes: dict) -> List[dict]:
     family_name = "tree_models"
     print(f"\n\n\n\nRunning {family_name} family:\n")
 
-    # The grid of hyperparameters for each model
-    tree_models = {
-        "RandomForestRegressor": {
-            "model": RandomForestRegressor(random_state=2025),
-            "grid": {"n_estimators": [10, 40], "max_depth": [5, 10]},
-        },
-        "XGBRegressor": {
-            "model": XGBRegressor(tree_method="hist", random_state=2025, verbosity=1),
-            "grid": {
-                "n_estimators": [10, 40],
-                "learning_rate": [0.01, 0.1],
-                "max_depth": [2, 6],
+    if models_grids == {}:
+        # The grid of hyperparameters for each model
+        tree_models = {
+            "RandomForestRegressor": {
+                "model": RandomForestRegressor(random_state=2025),
+                "grid": {"n_estimators": [10, 40], "max_depth": [5, 10]},
             },
-        },
-    }
+            "XGBRegressor": {
+                "model": XGBRegressor(
+                    tree_method="hist", random_state=2025, verbosity=1
+                ),
+                "grid": {
+                    "n_estimators": [10, 40],
+                    "learning_rate": [0.01, 0.1],
+                    "max_depth": [2, 6],
+                },
+            },
+        }
+    else:
+        tree_models = models_grids
 
     for model_name, settings in tree_models.items():
         print(f"Running {model_name} model:\n")

@@ -14,7 +14,20 @@ from sklearn.svm import SVR
 from sklearn.neighbors import KNeighborsRegressor
 
 
-def train_kernel_models(data_modes: dict) -> List[dict]:
+def train_kernel_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
+    """
+    The helper function to train and find the best hyperparameters for a specific family of models. Here: kernel based models
+    It receives data and model congifs in the input and tries a grid search on models and their corresponding space of parameters
+    To make it reuseable after initial testing of all models, it has the model_gird input option which one can use to search with different
+    settings within a family.
+
+    Args:
+        data_modes (dict): the dictionary of data, containing data modes (all_var, top_var, or pca)
+        models_grids (dict, optional): the dictionary of pair of models and their corresponding parameter space
+
+    Returns:
+        List[dict]: the list of results for the models trained, containing one numerical and one with the gridsearch objects (results and detailed_results)
+    """
     results = []  # we will use this to keep the results of the models
     detailed_results = []  # keeping grid search objects as well
 
@@ -22,24 +35,27 @@ def train_kernel_models(data_modes: dict) -> List[dict]:
     family_name = "kernel_models"
     print(f"\n\n\n\nRunning {family_name} family:\n")
 
-    # The grid of hyperparameters for each model
-    kernel_models = {
-        "SVR": {
-            "model": SVR(),
-            "grid": {
-                "kernel": ["linear", "rbf"],
-                "C": [0.1, 1.0, 10.0],
+    if models_grids == {}:
+        # The grid of hyperparameters for each model
+        kernel_models = {
+            "SVR": {
+                "model": SVR(),
+                "grid": {
+                    "kernel": ["linear", "rbf"],
+                    # "C": [0.1, 1.0, 10.0],
+                },
             },
-        },
-        "KNeighborsRegressor": {
-            "model": KNeighborsRegressor(),
-            "grid": {
-                "n_neighbors": [3, 5, 10],
-                "leaf_size": [10, 20],
-                "weights": ["uniform", "distance"],
+            "KNeighborsRegressor": {
+                "model": KNeighborsRegressor(),
+                "grid": {
+                    "n_neighbors": [3, 5, 10],
+                    "leaf_size": [10, 20],
+                    "weights": ["uniform", "distance"],
+                },
             },
-        },
-    }
+        }
+    else:
+        kernel_models = models_grids
 
     for model_name, settings in kernel_models.items():
         print(f"Running {model_name} model:\n")
