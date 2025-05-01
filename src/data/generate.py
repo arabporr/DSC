@@ -8,12 +8,12 @@ import multiprocessing
 from concurrent.futures import ProcessPoolExecutor as Executor
 from concurrent.futures import as_completed
 
-from src.data.European_vanilla import bs_price, mc_price
+from src.data.European_Vanilla import bs_price, mc_price
 from src.data.Worst_Off import mc_price_worst_off
 
 
 def single_option_price_europian_vanilla(
-    option_type: str,
+    option_type: Literal["call", "put"],
     S: float,
     K: float,
     T: float,
@@ -295,19 +295,19 @@ def generate_worst_off(
 
 
 def generate_data(
-    option: Literal["European_vanilla", "Worst_Off"],
-    European_vanilla_output_csv: str = "../data/01_raw/European_Vanilla_dataset.csv",
-    Worst_Off_output_csv: str = "../data/01_raw/Worst_Off_dataset.csv",
+    option: Literal["European_Vanilla", "Worst_Off"],
+    European_Vanilla_output_csv: str = "data/01_raw/European_Vanilla_dataset.csv",
+    Worst_Off_output_csv: str = "data/01_raw/Worst_Off_dataset.csv",
 ) -> None:
     """
     Wrapper function to generate data for different types of options.
 
     Parameters:
-        option (str): The type of option to generate data for. Can be "European_vanilla" or "Worst_Off".
+        option (str): The type of option to generate data for. Can be "European_Vanilla" or "Worst_Off".
     Returns:
         None: This function does not return anything. It generates a dataset and saves it to a CSV file.
     """
-    if option == "European_vanilla":
+    if option == "European_Vanilla":
 
         dataset = generate_european_vanilla(
             Option_types=["call", "put"],  # call, put
@@ -330,8 +330,8 @@ def generate_data(
             q_values=[0.0, 0.01, 0.02, 0.03, 0.04, 0.05],  # 0%, 1%, 2%, 3%, 4%, 5%
         )
 
-        dataset.to_csv(European_vanilla_output_csv, index=False)
-        print(f"Saved {len(dataset)} rows to {European_vanilla_output_csv}")
+        dataset.to_csv(European_Vanilla_output_csv, index=False)
+        print(f"Saved {len(dataset)} rows to {European_Vanilla_output_csv}")
 
     elif option == "Worst_Off":
         dataset = generate_worst_off(
@@ -367,11 +367,12 @@ if __name__ == "__main__":
     Adding the functionality of execution from command line.
     How to use?
 
-    python -m src.data.generate European_vanilla
+    python src/data/generate.py {Worst_Off or European_Vanilla}
 
+    It automatically saves the data into data/01_raw/ folder.
     """
 
     p = argparse.ArgumentParser()
-    p.add_argument("version", choices=["European_vanilla", "Worst_Off"])
+    p.add_argument("version", choices=["European_Vanilla", "Worst_Off"])
     args = p.parse_args()
     generate_data(args.version)

@@ -22,7 +22,7 @@ def get_requirements(file_path: str) -> List[str]:
 
 setup(
     name="data-science-project",
-    version="0.0.1",
+    version="0.2.1",
     author="Reza",
     author_email="Arabporr@yahoo.com",
     packages=find_packages(),
