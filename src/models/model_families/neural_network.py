@@ -41,17 +41,13 @@ def train_nn_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
                 "model": MLPRegressor(max_iter=100, random_state=2025),
                 "grid": {
                     "hidden_layer_sizes": [
-                        (10,),
+                        (100,),
                         (50,),
                         (
-                            20,
-                            20,
-                            20,
-                            20,
-                        ),
-                        (
-                            50,
-                            50,
+                            40,
+                            40,
+                            40,
+                            40,
                         ),
                     ],
                     "learning_rate": ["constant", "adaptive"],
@@ -64,7 +60,8 @@ def train_nn_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
     for model_name, settings in neural_networks.items():
         print(f"Running {model_name} model:\n")
         for data_mode, data in track(
-            data_modes.items(), description=f"data mode {data_mode}"
+            data_modes.items(),
+            description=f"Running different data modes for {model_name} model:",
         ):
 
             X_train_mode = data["X_train"]

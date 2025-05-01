@@ -34,11 +34,11 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     if option == "European_Vanilla":
         output_dir = "results/European_Vanilla"
         output_file_address_result = "results/European_Vanilla/model_comparison.csv"
-        output_file_address_details = "results/European_Vanilla/model_comparison.csv"
+        output_file_address_details = "results/European_Vanilla/detailed_results.pkl"
     elif option == "Worst_Off":
         output_dir = "results/Worst_Off"
         output_file_address_result = "results/Worst_Off/model_comparison.csv"
-        output_file_address_details = "results/Worst_Off/model_comparison.csv"
+        output_file_address_details = "results/Worst_Off/detailed_results.pkl"
     else:
         raise ValueError(
             "Invalid option. Choose either 'European_Vanilla' or 'Worst_Off'."
@@ -136,21 +136,6 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
             "y_test": y_test,
         },
     }
-    if option == "Worst_Off":
-        data_modes = {
-            "top_vars": {
-                "X_train": X_train_top_vars,
-                "X_test": X_test_top_vars,
-                "y_train": y_train,
-                "y_test": y_test,
-            },
-            "pca": {
-                "X_train": X_train_pca,
-                "X_test": X_test_pca,
-                "y_train": y_train,
-                "y_test": y_test,
-            },
-        }
 
     # To make things cleaner, I grouped the models based on their type into different families
     # and for each of them we will use a relatively similar loop and a grid search with cross validation

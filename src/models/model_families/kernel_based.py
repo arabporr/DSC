@@ -43,13 +43,13 @@ def train_kernel_models(data_modes: dict, models_grids: dict = {}) -> List[dict]
                 "grid": {
                     "kernel": ["linear", "rbf"],
                     "C": [0.1, 1.0, 10.0],
+                    "max_iter": [4000],
                 },
             },
             "KNeighborsRegressor": {
                 "model": KNeighborsRegressor(),
                 "grid": {
-                    "n_neighbors": [3, 5, 10],
-                    "leaf_size": [10, 20],
+                    "n_neighbors": [5, 10, 100],
                     "weights": ["uniform", "distance"],
                 },
             },
@@ -88,28 +88,8 @@ def train_kernel_models(data_modes: dict, models_grids: dict = {}) -> List[dict]
                 verbose=10,
             )
 
-            # Here again, like previous group, we have a new version
-            # This time since one of the algorithms is slow (SVR)
-            # we will save some time by sampling 40% of the data for faster computation
-            # regardless of the data mode, since the issue is with the algorithm itself
             start = time.time()
-            if model_name == "SVR":
-                ratio = 0.4
-                full_len = len(X_train_mode)
-                sample_size = int(ratio * full_len)
-                sample_indices = np.random.choice(
-                    full_len, size=sample_size, replace=False
-                )
-                # The data type for the PCA data is different from the other two, its a numpy array
-                # so we need to use indexing instead of iloc
-                if data_mode == "pca":
-                    gs.fit(X_train_mode[sample_indices], y_train[sample_indices])
-                else:
-                    gs.fit(
-                        X_train_mode.iloc[sample_indices], y_train.iloc[sample_indices]
-                    )
-            else:
-                gs.fit(X_train_mode, y_train)
+            gs.fit(X_train_mode, y_train)
             elapsed = time.time() - start
 
             best = gs.best_estimator_

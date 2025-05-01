@@ -40,16 +40,21 @@ def train_tree_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
         tree_models = {
             "RandomForestRegressor": {
                 "model": RandomForestRegressor(random_state=2025),
-                "grid": {"n_estimators": [10, 40], "max_depth": [5, 10]},
+                "grid": {
+                    "n_estimators": [10, 20, 40],
+                    "max_depth": [5, 10, 20],
+                    "min_samples_split": [0.1, 100],
+                    "max_features": ["sqrt"],
+                },
             },
             "XGBRegressor": {
                 "model": XGBRegressor(
                     tree_method="hist", random_state=2025, verbosity=1
                 ),
                 "grid": {
-                    "n_estimators": [10, 40],
-                    "learning_rate": [0.01, 0.1],
-                    "max_depth": [2, 6],
+                    "n_estimators": [10, 20, 40],
+                    "learning_rate": [0.01, 0.1, 0.2, 0.3, 0.4],
+                    "max_depth": [1, 2, 5, 10],
                 },
             },
         }
