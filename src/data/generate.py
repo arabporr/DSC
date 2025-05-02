@@ -1,5 +1,7 @@
-from typing import Literal
+import os
 import argparse
+
+from typing import Literal
 
 import numpy as np
 import pandas as pd
@@ -330,6 +332,7 @@ def generate_data(
             q_values=[0.0, 0.01, 0.02, 0.03, 0.04, 0.05],  # 0%, 1%, 2%, 3%, 4%, 5%
         )
 
+        os.makedirs(os.path.dirname(European_Vanilla_output_csv), exist_ok=True)
         dataset.to_csv(European_Vanilla_output_csv, index=False)
         print(f"Saved {len(dataset)} rows to {European_Vanilla_output_csv}")
 
@@ -354,7 +357,7 @@ def generate_data(
             ],  # 1 month, 6 months, 1 year, 2 years, 5 years
             r_values=[0.01, 0.025, 0.05, 0.1],  # 1%, 2.5%, 5%, 10%
         )
-
+        os.makedirs(os.path.dirname(Worst_Off_output_csv), exist_ok=True)
         dataset.to_csv(Worst_Off_output_csv, index=False)
         print(f"Saved {len(dataset)} rows to {Worst_Off_output_csv}")
 

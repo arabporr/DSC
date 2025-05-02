@@ -33,7 +33,7 @@ def cleaner_worst_off(dataset: pd.DataFrame) -> pd.DataFrame:
         Also saves a csv file in data/02_processed/ folder.
     """
 
-    output_address = "data/02_processed/Worst_Off_cleaned_dataset.csv"
+    output_file_address = "data/02_processed/Worst_Off_cleaned_dataset.csv"
 
     # Rename columns for readability
     new_names = {
@@ -61,8 +61,9 @@ def cleaner_worst_off(dataset: pd.DataFrame) -> pd.DataFrame:
     dataset = dataset.round(4)
 
     # Save cleaned data to a new CSV file
-    if not os.path.exists(output_address):
-        dataset.to_csv(output_address, index=False)
+    os.makedirs(os.path.dirname(output_file_address), exist_ok=True)
+    if not os.path.exists(output_file_address):
+        dataset.to_csv(output_file_address, index=False)
         print("Cleaned data saved to CSV file.")
     else:
         print("Cleaned data already exists. No new file created.")
@@ -286,6 +287,7 @@ def feature_engineering_worst_off(dataset: pd.DataFrame) -> None:
     )
     processed_data[Target_column] = dataset[Target_column]
 
+    os.makedirs(os.path.dirname(output_file_address), exist_ok=True)
     if not os.path.exists(output_file_address):
         processed_data.to_csv(output_file_address)
         print("Processed data saved to CSV file.")
