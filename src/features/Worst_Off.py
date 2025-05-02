@@ -289,7 +289,7 @@ def feature_engineering_worst_off(dataset: pd.DataFrame) -> None:
 
     os.makedirs(os.path.dirname(output_file_address), exist_ok=True)
     if not os.path.exists(output_file_address):
-        processed_data.to_csv(output_file_address)
+        processed_data.to_csv(output_file_address, index=False)
         print("Processed data saved to CSV file.")
     else:
         print("Processed data already exists. No new file created.")

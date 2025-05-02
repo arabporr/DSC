@@ -15,14 +15,14 @@ class AutoencoderFeatureExtractor(nn.Module):
     def __init__(self, input_dim, encoding_dim):
         super(AutoencoderFeatureExtractor, self).__init__()
         self.encoder = nn.Sequential(
-            nn.Linear(input_dim, 128),
+            nn.Linear(input_dim, 256),
             nn.ReLU(),
-            nn.Linear(128, encoding_dim),
+            nn.Linear(256, encoding_dim),
         )
         self.decoder = nn.Sequential(
-            nn.Linear(encoding_dim, 128),
+            nn.Linear(encoding_dim, 256),
             nn.ReLU(),
-            nn.Linear(128, input_dim),
+            nn.Linear(256, input_dim),
         )
 
     def forward(self, x):
@@ -36,8 +36,14 @@ class AutoencoderFeatureExtractor(nn.Module):
 
 
 def train_autoencoder(
-    option_type, model, X_train, device, epochs=25, batch_size=64, learning_rate=1e-5
-) -> AutoencoderFeatureExtractor.object:
+    option_type: Literal["European_Vanilla", "Worst_Off"],
+    model,
+    X_train,
+    device,
+    epochs: int = 25,
+    batch_size: int = 64,
+    learning_rate: float = 1e-4,
+):
     """
     Training function for the autoencoder.
 
@@ -117,7 +123,7 @@ def autoencoder_feature_extraction(
     encoding_dim = 40
     model = AutoencoderFeatureExtractor(input_dim, encoding_dim)
     X_train_tensor = torch.tensor(np.array(X_train), dtype=torch.float32)
-    model = train_autoencoder(option, model, X_train_tensor)
+    model = train_autoencoder(option, model, X_train_tensor, device)
     X_train_features = (
         model.extract_features(X_train_tensor.to(device)).cpu().detach().numpy()
     )

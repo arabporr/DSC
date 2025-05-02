@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 
 
-df = pd.read_csv("../data/processed_options_dataset.csv")
+df = pd.read_csv("data/02_processed/European_Vanilla_processed_dataset.csv")
 
 assert df.isna().sum().sum() == 0
 assert np.isfinite(df.select_dtypes(include=[float])).all().all()
@@ -212,6 +212,5 @@ subset = [
     "interest_rate",
     "volatility",
     "dividend_yield",
-    "option_type",
 ]
-assert df.duplicated(subset=subset).sum() == 0
+assert df.duplicated(subset=subset).sum() == (len(df) / 2)
