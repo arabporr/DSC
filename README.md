@@ -133,6 +133,7 @@ This project is a modular, end-to-end pipeline for options pricing using both cl
 │ └── main.py # Main entry point for the full pipeline
 ├── data/ # Raw, processed, and split datasets
 ├── results/ # Model results, plots, and best models
+├── tests/ # testcases for testing (not comprehensive, to be completed)
 ├── requirements.txt # Python dependencies
 ├── setup.py # Python package setup
 └── .env_setup.txt # Environment setup instructions
