@@ -54,7 +54,10 @@ def single_option_price_europian_vanilla(
     """
 
     bs = bs_price(option_type, S, K, T, r, sigma, q)
-    mc = mc_price(option_type, S, K, T, r, sigma, q, n_paths)
+    if n_paths > 0:
+        mc = mc_price(option_type, S, K, T, r, sigma, q, n_paths)
+    else:
+        mc = 0
     return {
         "option_type": option_type,
         "S": S,

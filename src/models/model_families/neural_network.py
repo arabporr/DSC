@@ -8,7 +8,12 @@ import matplotlib.pyplot as plt
 from rich.progress import track
 
 from sklearn.model_selection import GridSearchCV
-from sklearn.metrics import root_mean_squared_error
+from sklearn.metrics import (
+    root_mean_squared_error,
+    mean_absolute_error,
+    r2_score,
+    mean_absolute_percentage_error,
+)
 
 from sklearn.neural_network import MLPRegressor
 
@@ -25,10 +30,10 @@ def train_nn_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
         models_grids (dict, optional): the dictionary of pair of models and their corresponding parameter space
 
     Returns:
-        List[dict]: the list of results for the models trained, containing one numerical and one with the gridsearch objects (results and detailed_results)
+        List[dict]: the list of results for the models trained, containing one numerical and one with the gridsearch objects (results and models_log)
     """
     results = []  # we will use this to keep the results of the models
-    detailed_results = []  # keeping grid search objects as well
+    models_log = []  # keeping grid search objects as well
 
     # Fourth family: neural_networks
     family_name = "neural_networks"
@@ -81,7 +86,7 @@ def train_nn_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
                 param_grid=param_grid,
                 scoring="neg_root_mean_squared_error",
                 cv=3,
-                n_jobs=-1,
+                n_jobs=-2,
                 verbose=10,
             )
 
@@ -91,8 +96,16 @@ def train_nn_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
             elapsed = time.time() - start
 
             best = gs.best_estimator_
-            train_rmse = root_mean_squared_error(y_train, best.predict(X_train_mode))
-            test_rmse = root_mean_squared_error(y_test, best.predict(X_test_mode))
+            y_pred_train = best.predict(X_train_mode)
+            y_pred_test = best.predict(X_test_mode)
+            train_rmse = root_mean_squared_error(y_train, y_pred_train)
+            test_rmse = root_mean_squared_error(y_test, y_pred_test)
+            train_mae = mean_absolute_error(y_train, y_pred_train)
+            test_mae = mean_absolute_error(y_test, y_pred_test)
+            train_r2 = r2_score(y_train, y_pred_train)
+            test_r2 = r2_score(y_test, y_pred_test)
+            train_mape = mean_absolute_percentage_error(y_train, y_pred_train)
+            test_mape = mean_absolute_percentage_error(y_test, y_pred_test)
 
             results.append(
                 {
@@ -101,21 +114,25 @@ def train_nn_models(data_modes: dict, models_grids: dict = {}) -> List[dict]:
                     "data_mode": data_mode,
                     "train_rmse": train_rmse,
                     "test_rmse": test_rmse,
+                    "train_mae": train_mae,
+                    "test_mae": test_mae,
+                    "train_r2": train_r2,
+                    "test_r2": test_r2,
+                    "train_mape": train_mape,
+                    "test_mape": test_mape,
                     "time_s": elapsed,
                     "best_estimator": best,
                 }
             )
 
-            detailed_results.append(
+            models_log.append(
                 {
                     "family": family_name,
                     "model": model_name,
                     "data_mode": data_mode,
-                    "train_rmse": train_rmse,
-                    "test_rmse": test_rmse,
                     "time_s": elapsed,
                     "gs_object": gs,
                 }
             )
 
-    return [results, detailed_results]
+    return [results, models_log]

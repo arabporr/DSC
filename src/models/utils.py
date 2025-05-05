@@ -65,6 +65,7 @@ def train_autoencoder(
     if os.path.exists(model_path):
         print(f"Model already exists at {model_path}. Loading the model.")
         model.load_state_dict(torch.load(model_path))
+        model = model.to(device)
         return model
 
     print("Training the autoencoder...")

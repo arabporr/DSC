@@ -34,13 +34,15 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     """
     # Output paths
     if option == "European_Vanilla":
+        data_modes_file_output = "data/03_splitted/European_Vanilla/data_modes.pkl"
         output_dir = "results/European_Vanilla"
         output_file_address_result = "results/European_Vanilla/model_comparison.csv"
-        output_file_address_details = "results/European_Vanilla/detailed_results.pkl"
+        output_file_address_details = "results/European_Vanilla/models_log.pkl"
     elif option == "Worst_Off":
+        data_modes_file_output = "data/03_splitted/Worst_Off/data_modes.pkl"
         output_dir = "results/Worst_Off"
         output_file_address_result = "results/Worst_Off/model_comparison.csv"
-        output_file_address_details = "results/Worst_Off/detailed_results.pkl"
+        output_file_address_details = "results/Worst_Off/models_log.pkl"
     else:
         raise ValueError(
             "Invalid option. Choose either 'European_Vanilla' or 'Worst_Off'."
@@ -151,6 +153,9 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
         },
     }
 
+    with open(data_modes_file_output, "wb") as f:
+        pickle.dump(data_modes, f)
+
     # To make things cleaner, I grouped the models based on their type into different families
     # and for each of them we will use a relatively similar loop and a grid search with cross validation
     # Families: linear_models, tree_based_models, kernel_based_models, neural_networks
@@ -162,14 +167,14 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
     ]
 
     results = []  # we will use this to keep the results of the models
-    detailed_results = []  # keeping grid search objects as well
+    models_log = []  # keeping grid search objects as well
 
     print("Model Trainer: ", "Training started")
 
     for trainer in families_trainers:
         family_result, family_detailed_result = trainer(data_modes)
         results.extend(family_result)
-        detailed_results.extend(family_detailed_result)
+        models_log.extend(family_detailed_result)
 
     print("Model Trainer: ", "Training done")
 
@@ -181,7 +186,7 @@ def train_all_models(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
 
     # Saving the detailed results to a pickle file (since it has the grid search objects)
     with open(output_file_address_details, "wb") as f:
-        pickle.dump(detailed_results, f)
+        pickle.dump(models_log, f)
 
     print("Model Trainer: ", "results saved. Done.")
 
