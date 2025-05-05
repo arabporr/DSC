@@ -1,6 +1,6 @@
-# Data Science Challenge Project
+# End-to-End Machine Learning Pipeline for Options Pricing
 
-_Author: Reza Arabporr_
+_Author: Reza Arabpour_
 
 ---
 
