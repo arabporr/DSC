@@ -172,23 +172,23 @@ This project is a modular, end-to-end pipeline for options pricing using both cl
 
 - **European Vanilla:**
   - `option_type`: ["call", "put"]
-  - `S`: Underlying asset price (default: [80, 90, 100, 110, 120])
-  - `K`: Strike price (default: [80, 90, 100, 110, 120])
-  - `T`: Time to expiration in years (default: [0.25, 0.5, 1.0, 2.0])
-  - `r`: Risk-free interest rate (default: [0.01, 0.05, 0.1])
-  - `sigma`: Volatility (default: [0.1, 0.2, 0.3, 0.4])
-  - `q`: Dividend yield (default: [0.0, 0.02])
+  - `S`: Underlying asset price (default: 50, 52, 54, ..., 150; i.e., `np.linspace(50, 150, 51)`)
+  - `K`: Strike price (default: [100])
+  - `T`: Time to expiration in years (default: [0.08, 0.25, 0.5, 1.0, 1.5, 2.0, 2.5, 3.0, 4.0, 5.0])
+  - `r`: Risk-free interest rate (default: [0.01, 0.025, 0.05, 0.075, 0.1])
+  - `sigma`: Volatility (default: [0.1, 0.2, 0.4, 0.6, 0.8])
+  - `q`: Dividend yield (default: [0.0, 0.01, 0.02, 0.03, 0.04, 0.05])
   - `n_paths`: Number of Monte Carlo paths (default: 10,000)
 
 - **Worst-Off:**
   - `option_type`: ["call", "put"]
-  - `S1`, `S2`: Spot prices for two assets (default: [80, 90, 100, 110, 120])
-  - `K1`, `K2`: Strike prices for two assets (default: [80, 90, 100, 110, 120])
-  - `sigma1`, `sigma2`: Volatilities (default: [0.1, 0.2, 0.3, 0.4])
-  - `q1`, `q2`: Dividend yields (default: [0.0, 0.02])
-  - `corr`: Correlation between assets (default: [-0.5, 0.0, 0.5, 0.9])
-  - `T`: Time to maturity in years (default: [0.25, 0.5, 1.0, 2.0])
-  - `r`: Risk-free rate (default: [0.01, 0.05, 0.1])
+  - `S1`, `S2`: Spot prices for two assets (default: 80, 85, 90, 95, 100, 105, 110, 115, 120; i.e., `np.linspace(80, 120, 9)`)
+  - `K1`, `K2`: Strike prices for two assets (default: [100])
+  - `sigma1`, `sigma2`: Volatilities (default: [0.1, 0.4, 0.8])
+  - `q1`, `q2`: Dividend yields (default: [0.01, 0.02, 0.05])
+  - `corr`: Correlation between assets (default: [0.01, 0.2, 0.5, 0.8])
+  - `T`: Time to maturity in years (default: [0.08, 0.5, 1.0, 2.0, 5.0])
+  - `r`: Risk-free rate (default: [0.01, 0.025, 0.05, 0.1])
   - `n_paths`: Number of Monte Carlo paths (default: 10,000)
 
 **All parameter grids and their default values are defined in `src/data/generate.py` and can be customized.**
