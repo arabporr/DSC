@@ -26,7 +26,9 @@ from src.features.European_Vanilla import (
 from src.features.Worst_Off import cleaner_worst_off, feature_engineering_worst_off
 
 
-def train_test_splitter(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
+def train_test_splitter(
+    option: Literal["European_Vanilla", "Worst_Off"], train_idx, test_idx
+) -> None:
     """
     This function loads the data based on the option data type and then splits it into training and testing splits.
     Finally save them in data/03_splitted/ folder. (for European_Vanilla in data/03_splitted/European_Vanilla/ and
@@ -34,6 +36,8 @@ def train_test_splitter(option: Literal["European_Vanilla", "Worst_Off"]) -> Non
 
     Parameters:
         option (str): the type of option data we want to split
+        train_idx (pandas.core.indexes.base.Index): training set indexes
+        test_idx (pandas.core.indexes.base.Index): testing set indexes
 
     Returns:
         None: It saves the result as csv files in /data/03_splitted/ folder.
@@ -66,10 +70,12 @@ def train_test_splitter(option: Literal["European_Vanilla", "Worst_Off"]) -> Non
     X = processed_data.drop(columns=[target_column])
     y = processed_data[target_column]
 
-    # Perform train-test split
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.3, random_state=2025, shuffle=True
-    )
+    # now use the train_idx and test_idx you already generated
+    X_train = X.loc[train_idx]
+    X_test = X.loc[test_idx]
+
+    y_train = y.loc[train_idx]
+    y_test = y.loc[test_idx]
 
     # Save the splits to CSV files
     os.makedirs(os.path.dirname(output_directory), exist_ok=True)
@@ -106,24 +112,29 @@ def preprocessor(option: Literal["European_Vanilla", "Worst_Off"]) -> None:
 
     if option == "European_Vanilla":
         raw_data = pd.read_csv(European_Vanilla_raw_address)
+
         cleaned_data = cleaner_european_vanilla(raw_data)
-        feature_engineering_european_vanilla(cleaned_data)
+        train_idx, test_idx = train_test_split(
+            raw_data.index, test_size=0.3, random_state=2025, shuffle=True
+        )
+        feature_engineering_european_vanilla(cleaned_data, train_idx, test_idx)
     elif option == "Worst_Off":
         raw_data = pd.read_csv(Worst_Off_raw_address)
         cleaned_data = cleaner_worst_off(raw_data)
-
         # Since I tested and the file size was above 15GB! I decided to sample from this dataset to avoid memory issue
         # (it has 780 variables and 1,000,000 rows!) we will use 10% for now, which has 100K rows and is 1.5 GB
         cleaned_data = cleaned_data.sample(frac=0.1, random_state=2025)
-
-        feature_engineering_worst_off(cleaned_data)
+        train_idx, test_idx = train_test_split(
+            raw_data.index, test_size=0.3, random_state=2025, shuffle=True
+        )
+        feature_engineering_worst_off(cleaned_data, train_idx, test_idx)
     else:
         raise ValueError(
             "Invalid option. Choose either 'European_Vanilla' or 'Worst_Off'."
         )
 
     # Split the data into training and testing sets
-    train_test_splitter(option)
+    train_test_splitter(option, train_idx, test_idx)
 
 
 if __name__ == "__main__":

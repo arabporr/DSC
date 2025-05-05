@@ -71,7 +71,7 @@ def cleaner_worst_off(dataset: pd.DataFrame) -> pd.DataFrame:
     return dataset
 
 
-def feature_engineering_worst_off(dataset: pd.DataFrame) -> None:
+def feature_engineering_worst_off(dataset: pd.DataFrame, train_idx, test_idx) -> None:
     """
     This function create and apply a pipeline to add new features and scales the data.
     The list is very long, please check out the "add_columns()" function inside this function. (I did it inside here to avoid excessive function definitions)
@@ -80,6 +80,8 @@ def feature_engineering_worst_off(dataset: pd.DataFrame) -> None:
 
     Parameters:
         dataset (pd.DataFrame): a cleaned european vanilla dataset
+        train_idx (pandas.core.indexes.base.Index): training set indexes
+        test_idx (pandas.core.indexes.base.Index): testing set indexes
 
     Returns:
         None: It saves the resulting dataset as a file in data/02_preprocessed/
@@ -261,7 +263,10 @@ def feature_engineering_worst_off(dataset: pd.DataFrame) -> None:
         ]
     )
 
-    df_temp_1 = add_new_cols.fit_transform(dataset[Numerical_features])
+    train_df = dataset.iloc[train_idx]
+    test_df = dataset.iloc[test_idx]
+
+    df_temp_1 = add_new_cols.fit_transform(train_df[Numerical_features])
     df_temp_2 = pd.DataFrame(
         add_poly.fit_transform(df_temp_1),
         columns=add_poly.get_feature_names_out(df_temp_1.columns),
@@ -271,7 +276,7 @@ def feature_engineering_worst_off(dataset: pd.DataFrame) -> None:
     num_feature_names = df_temp_2.columns.tolist()
 
     df_temp_1 = pd.DataFrame(
-        categorical_pipeline.fit_transform(dataset[Categorical_features]).toarray(),
+        categorical_pipeline.fit_transform(train_df[Categorical_features]).toarray(),
         columns=categorical_pipeline.get_feature_names_out(Categorical_features),
     )
     cat_feature_names = df_temp_1.columns.tolist()
@@ -279,13 +284,19 @@ def feature_engineering_worst_off(dataset: pd.DataFrame) -> None:
     all_feature_names = list(num_feature_names) + list(cat_feature_names)
     print("Pipeline tested. Output features are:\n", all_feature_names)
 
-    processed_data = preprocessor.fit_transform(
-        dataset[Numerical_features + Categorical_features]
+    processed_data_train = preprocessor.fit_transform(
+        train_df[Numerical_features + Categorical_features]
     )
+    processed_data_test = preprocessor.transform(
+        test_df[Numerical_features + Categorical_features]
+    )
+    processed_data = np.vstack([processed_data_train, processed_data_test])
     processed_data = pd.DataFrame(
         processed_data, columns=all_feature_names, index=dataset.index
     )
-    processed_data[Target_column] = dataset[Target_column]
+    processed_data[Target_column] = pd.concat(
+        [train_df[Target_column], test_df[Target_column]], axis=0
+    ).reset_index(drop=True)
 
     os.makedirs(os.path.dirname(output_file_address), exist_ok=True)
     if not os.path.exists(output_file_address):
